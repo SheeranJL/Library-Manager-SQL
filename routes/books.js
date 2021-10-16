@@ -29,6 +29,7 @@ router.get('/new', (req, res) => {
 });
 
 
+//Post route for new book creation
 router.post('/new', asyncHandler(async (req, res) => {
   let newEntry;
   try {
@@ -47,22 +48,32 @@ router.post('/new', asyncHandler(async (req, res) => {
 ));
 
 //Shows book detail form//
-router.get('/:id', asyncHandler(async (req, res) => {
+router.get('/:id', asyncHandler(async (req, res, next) => {
   const book = await Book.findByPk(req.params.id)
+
   if (book) {
-  res.render('book-detail', {book} );
+    res.render('book-detail', {book} );
   } else {
-  console.log('A 500 error occured.')
-  res.render('error', {message: 'There was an issue on our end providing you with the information you requested. Please let us know if you believe this to be a mistake.'});
+    const err = new Error();
+    err.status = 404;
+    err.message = 'There was an error';
+    next(err);
   }
 }
 ));
 
 //Edit Page//
-router.get('/:id/edit', asyncHandler(async (req, res) => {
+router.get('/:id/edit', asyncHandler(async (req, res, next) => {
   const book = await Book.findByPk(req.params.id);
-  console.log(book);
+
+  if (book) {
   res.render('update-book', {book} )
+} else {
+  const err = new Error();
+  err.status = 404;
+  err.message = 'there was an error';
+  next(err);
+}
 }));
 
 
@@ -90,6 +101,7 @@ router.post('/:id/delete', asyncHandler(async (req, res) => {
 }));
 
 
+//Search bar route//
 router.post('/search', asyncHandler(async (req, res) => {
   const searchQuery = req.body.search.toLowerCase();
 
@@ -105,5 +117,7 @@ router.post('/search', asyncHandler(async (req, res) => {
   })
   res.render('index', {books:books})
   }))
+
+
 
 module.exports = router;

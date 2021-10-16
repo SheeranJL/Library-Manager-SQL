@@ -44,20 +44,16 @@ app.use( (req, res, next) => {
 // error handler
 app.use( (err, req, res, next) => {
 
-  // res.locals.message = err.message;
-  // res.locals.error = req.app.get('env') === 'development' ? err : {};
-  // if (err) {
-  //   console.log('Global error handler called', err)
-  // }
+  if (err) {
+    console.log('The global error handler has been called', err)
+  }
 
   if (err.status === 404) {
-    console.log('A 404 Error occured');
     const errorMessage = "Oh no! We couldn't find what you were looking for. It's probably lost within this picture somewhere. Go back and search again while we clean up.";
     res.status(404).render('page-not-found', {errorMessage, err})
   } else {
-    console.log('A 500 error occured.', err)
     err.message = err.message || 'Oh no! Something on our end went wrong. If this error persists, please contact site admin.'
-    res.status(err.status || 500).render('error', {message, err})
+    res.status(err.status || 500).render('error', {err})
   }
 });
 
